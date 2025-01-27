@@ -8,8 +8,8 @@ import { Button } from "./components/ui/button";
 import { Toaster } from "./components/ui/toaster";
 import { useToast } from "./hooks/use-toast";
 
-const ingredients = Object.keys(
-  import.meta.glob("@/assets/game/*", { eager: true }),
+const ingredients: string[] = Object.values(
+  import.meta.glob("@/assets/game/*", { eager: true, import: "default" }),
 );
 
 export default function App() {
