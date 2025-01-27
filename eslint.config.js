@@ -1,21 +1,44 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
+import react from 'eslint-plugin-react';
+import tailwind from "eslint-plugin-tailwindcss";
+import prettier from "eslint-config-prettier";
 
 export default tseslint.config(
-  { ignores: ['dist'] },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    ignores: ['dist'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked,
+      ...tseslint.configs.stylisticTypeChecked,
+      react.configs.flat.recommended,
+      react.configs.flat['jsx-runtime'],
+      ...tailwind.configs["flat/recommended"],
+      prettier
+    ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+      ecmaVersion: "latest",
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
     },
+    settings: { react: { version: 'detect' } },
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      react,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -23,6 +46,17 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      'tailwindcss/no-custom-classname': 'off',
+      'tailwindcss/classnames-order': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
-)
+  {
+    files: ['**/components/ui/*.tsx'],
+    rules: {
+      'react/prop-types': [2, { ignore: ['className'] }],
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+);
