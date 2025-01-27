@@ -16,7 +16,9 @@ export default function App() {
   const defaultCardAmount = ingredients.length < 10 ? ingredients.length : 10;
   const [cardAmount, setCardAmount] = useState<number>(defaultCardAmount);
   const [currentScore, setCurrentScore] = useState<number>(0);
-  const [bestScore, setBestScore] = useState<number>(0);
+  const [bestScore, setBestScore] = useState<number>(
+    parseInt(localStorage.getItem("bestScore") ?? "0"),
+  );
   const [cardsInPlay, setCardsInPlay] = useState<string[]>(
     shuffleArray(ingredients).slice(0, defaultCardAmount),
   );
@@ -47,6 +49,7 @@ export default function App() {
   useEffect(() => {
     if (currentScore > bestScore) {
       setBestScore(currentScore);
+      localStorage.setItem("bestScore", currentScore.toString());
     }
   }, [currentScore, bestScore]);
 
